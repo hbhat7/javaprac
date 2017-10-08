@@ -19,13 +19,15 @@ public class WatchServiceExample extends Thread {
 
     Path watchDirPath;
     WatchService watcher;
+    String threadName;
     private final Map<WatchKey,Path> keys = new HashMap<WatchKey,Path>();
 
 
-    WatchServiceExample(String path) {
+    WatchServiceExample(String path,String threadName) {
         try {
             watchDirPath = Paths.get(path);
             this.watcher = FileSystems.getDefault().newWatchService();
+            this.threadName = threadName;
             registerAll(watchDirPath);
         }
         catch (Exception e) {
@@ -65,7 +67,8 @@ public class WatchServiceExample extends Thread {
                     //     StandardWatchEventKinds.ENTRY_MODIFY
 
                     if ( (event.kind() == StandardWatchEventKinds.ENTRY_CREATE)) {
-                        System.out.println("Created--: " + event.context().toString());
+                        Thread.sleep(1000);
+                        System.out.println("Created--: "+ this.threadName+"-"+ event.context().toString());
 
                         try {
                             Path child = watchDirPath.resolve(event.context().toString());
@@ -78,7 +81,7 @@ public class WatchServiceExample extends Thread {
                     }
 
                     if((event.kind() == StandardWatchEventKinds.ENTRY_MODIFY || event.kind() == StandardWatchEventKinds.ENTRY_DELETE)  ){
-                        System.out.println("Modified/Deleted--: " + event.context().toString());
+                        //System.out.println("Modified/Deleted--: " + event.context().toString());
 
                     }
 
